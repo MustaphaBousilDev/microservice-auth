@@ -1,6 +1,11 @@
 import { IDatabase, IDatabaseConfig } from '../interfaces/database.interface';
 import { DatabaseProvider } from '../constants/database.enum';
-import { TypeOrmAdapter, PrismaAdapter, MongooseAdapter } from '../adapters';
+import {
+  TypeOrmAdapter,
+  PrismaAdapter,
+  MongooseAdapter,
+  SequelizeAdapter,
+} from '../adapters';
 
 export class DatabaseFactory {
   static createDatabase(
@@ -14,6 +19,8 @@ export class DatabaseFactory {
         return new MongooseAdapter(config);
       case DatabaseProvider.PRISMA:
         return new PrismaAdapter(config);
+      case DatabaseProvider.SEQUELIZE:
+        return new SequelizeAdapter(config);
       default:
         throw new Error(`Unsupported database provider: ${provider}`);
     }
