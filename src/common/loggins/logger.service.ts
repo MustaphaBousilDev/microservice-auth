@@ -5,6 +5,7 @@ import { LogContext } from './types/log-context.type';
 import { LoggerFactory, TransportType } from './factories/logger.factory';
 import { ILogTransport } from './interfaces/log-transport.interface';
 import { LoggerModuleOptions } from './logger.module';
+import { setLoggerService } from './decorators/log.decorator';
 
 @Injectable()
 export class LoggerService implements ILogger {
@@ -15,6 +16,8 @@ export class LoggerService implements ILogger {
     private readonly options: LoggerModuleOptions,
   ) {
     this.initializeTransports();
+    // Set logger instance in storage
+    setLoggerService(this);
   }
 
   private initializeTransports(): void {

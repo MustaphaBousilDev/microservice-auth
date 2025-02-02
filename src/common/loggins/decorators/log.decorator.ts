@@ -11,6 +11,7 @@ export const setLoggerService = (logger: LoggerService) => {
 };
 
 export function Log(level: LogLevel = LogLevel.INFO) {
+  console.log('decorator:', level);
   return function (
     target: any,
     propertyKey: string,
