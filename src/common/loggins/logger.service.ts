@@ -1,21 +1,24 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ILogger } from './interfaces/logger.interface';
 import { LogLevel } from './enums/log-level.enum';
 import { LogContext } from './types/log-context.type';
 import { LoggerFactory, TransportType } from './factories/logger.factory';
 import { ILogTransport } from './interfaces/log-transport.interface';
+import { LoggerModuleOptions } from './logger.module';
 
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class LoggerService implements ILogger {
   private transports: Map<TransportType, ILogTransport>;
 
-  constructor() {
-    this.transports = new Map();
+  constructor(
+    @Inject('LOGGER_OPTIONS')
+    private readonly options: LoggerModuleOptions,
+  ) {
     this.initializeTransports();
   }
 
   private initializeTransports(): void {
-    if (process.env.NODE_ENV === 'production') {
+    if (this.options.isProduction) {
       this.addTransport(TransportType.WINSTON);
     } else {
       this.addTransport(TransportType.CONSOLE);
@@ -25,7 +28,7 @@ export class LoggerService implements ILogger {
 
   addTransport(type: TransportType, options?: any): void {
     const transport = LoggerFactory.createTransport(type, options);
-    this.transports.set(type, transport);
+    this.transports?.set(type, transport);
   }
 
   removeTransport(type: TransportType): void {

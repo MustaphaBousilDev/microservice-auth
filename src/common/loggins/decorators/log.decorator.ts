@@ -1,6 +1,15 @@
 import { LogLevel } from '../enums/log-level.enum';
 import { LoggerService } from '../logger.service';
 
+// Create a storage for logger instance
+export const LoggerStorage = {
+  loggerService: null as LoggerService | null,
+};
+// Method to set logger instance
+export const setLoggerService = (logger: LoggerService) => {
+  LoggerStorage.loggerService = logger;
+};
+
 export function Log(level: LogLevel = LogLevel.INFO) {
   return function (
     target: any,
@@ -10,7 +19,10 @@ export function Log(level: LogLevel = LogLevel.INFO) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const logger = new LoggerService();
+      if (!LoggerStorage.loggerService) {
+        throw new Error('Logger service not initialized');
+      }
+      const logger = LoggerStorage.loggerService;
       const className = target.constructor.name;
       const methodName = propertyKey;
       try {

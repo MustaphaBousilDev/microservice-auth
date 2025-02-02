@@ -26,6 +26,15 @@ export class EnvironmentVariables implements IEnvironmentVariables {
   @IsString()
   private _jwtExpiresIn: string;
 
+  @IsString()
+  private _logLevel: string;
+
+  @IsString()
+  private _logFormat: string;
+
+  @IsString()
+  private _logFilePath: string;
+
   constructor(configService: ConfigService) {
     this._dbHost = configService.getOrThrow<string>('DB_HOST');
     this._dbPort = configService.getOrThrow<string>('DB_PORT');
@@ -34,6 +43,9 @@ export class EnvironmentVariables implements IEnvironmentVariables {
     this._dbName = configService.getOrThrow<string>('DB_NAME');
     this._jwtSecret = configService.getOrThrow<string>('JWT_SECRET');
     this._jwtExpiresIn = configService.getOrThrow<string>('JWT_EXPIRES_IN');
+    this._logLevel = configService.getOrThrow<string>('LOG_LEVEL');
+    this._logFormat = configService.getOrThrow<string>('LOG_FORMAT');
+    this._logFilePath = configService.getOrThrow<string>('LOG_FILE_PATH');
 
     this.validateConfig();
   }
@@ -71,5 +83,16 @@ export class EnvironmentVariables implements IEnvironmentVariables {
 
   public get jwtExpiresIn(): string {
     return this._jwtExpiresIn;
+  }
+  get logLevel(): string {
+    return this._logLevel;
+  }
+
+  get logFormat(): string {
+    return this._logFormat;
+  }
+
+  get logFilePath(): string {
+    return this._logFilePath;
   }
 }
