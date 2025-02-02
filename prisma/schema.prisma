@@ -12,3 +12,126 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  firstName     String
+  lastName      String
+  isActive      Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  credentials   UserCredentials?
+  sessions      Session[]
+  roles         UserRole[]
+  authLogs      AuthLog[]
+
+  @@map("users")
+}
+model UserCredentials {
+  id                 String    @id @default(uuid())
+  passwordHash       String
+  twoFactorSecret    String?
+  isTwoFactorEnabled Boolean   @default(false)
+  passwordChangedAt  DateTime?
+  failedLoginAttempts Int      @default(0)
+  lastFailedLoginAt  DateTime?
+
+  // Relations
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+
+  @@map("user_credentials")
+}
+model Role {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+
+  // Relations
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+model Permission {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  action      String    // CREATE, READ, UPDATE, DELETE
+
+  // Relations
+  resourceId  String
+  resource    Resource  @relation(fields: [resourceId], references: [id])
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+model Resource {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+
+  // Relations
+  permissions Permission[]
+
+  @@map("resources")
+}
+
+model Session {
+  id             String   @id @default(uuid())
+  token          String
+  refreshToken   String
+  ipAddress      String
+  userAgent      String
+  expiresAt      DateTime
+  lastActivityAt DateTime @default(now())
+  isValid        Boolean  @default(true)
+
+  // Relations
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+model AuthLog {
+  id        String   @id @default(uuid())
+  action    String
+  ipAddress String
+  userAgent String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("auth_logs")
+}
+model UserRole {
+  userId    String
+  roleId    String
+  assignedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
