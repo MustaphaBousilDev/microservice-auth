@@ -35,6 +35,18 @@ export class EnvironmentVariables implements IEnvironmentVariables {
   @IsString()
   private _logFilePath: string;
 
+  @IsString()
+  private _dbHostMongo: string;
+
+  @IsString()
+  private _dbPortMongo: string;
+
+  @IsString()
+  private _dbUsernameMongo: string;
+
+  @IsString()
+  private _dbPasswordMongo: string;
+
   constructor(configService: ConfigService) {
     this._dbHost = configService.getOrThrow<string>('DB_HOST');
     this._dbPort = configService.getOrThrow<string>('DB_PORT');
@@ -46,6 +58,12 @@ export class EnvironmentVariables implements IEnvironmentVariables {
     this._logLevel = configService.getOrThrow<string>('LOG_LEVEL');
     this._logFormat = configService.getOrThrow<string>('LOG_FORMAT');
     this._logFilePath = configService.getOrThrow<string>('LOG_FILE_PATH');
+    this._dbHostMongo = configService.getOrThrow<string>('DB_HOST_MONGO');
+    this._dbPortMongo = configService.getOrThrow<string>('DB_PORT_MONGO');
+    this._dbUsernameMongo =
+      configService.getOrThrow<string>('DB_USERNAME_MONGO');
+    this._dbPasswordMongo =
+      configService.getOrThrow<string>('DB_PASSWORD_MONGO');
 
     this.validateConfig();
   }
@@ -61,16 +79,30 @@ export class EnvironmentVariables implements IEnvironmentVariables {
     return this._dbHost;
   }
 
+  public get dbHostMongoDB(): string {
+    return this._dbHostMongo;
+  }
+
   public get dbPort(): string {
     return this._dbPort;
+  }
+
+  public get dbPortMongoDB(): string {
+    return this._dbPortMongo;
   }
 
   public get dbUsername(): string {
     return this._dbUsername;
   }
+  public get dbUsernameMongoDB(): string {
+    return this._dbUsernameMongo;
+  }
 
   public get dbPassword(): string {
     return this._dbPassword;
+  }
+  public get dbPasswordMongoDB(): string {
+    return this._dbPasswordMongo;
   }
 
   public get dbName(): string {

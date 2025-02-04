@@ -7,4 +7,8 @@ export interface IEnvironmentVariables {
   dbName: string;
   jwtSecret: string;
   jwtExpiresIn: string;
+  dbHostMongoDB: string;
+  dbPortMongoDB: string;
+  dbUsernameMongoDB: string;
+  dbPasswordMongoDB: string;
 }
