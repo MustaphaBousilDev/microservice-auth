@@ -1,7 +1,9 @@
+import { LogContext } from '../types/log-context.type';
+
 export interface ILogger {
-  error(message: string, context?: Record<string, any>): void;
-  warn(message: string, context?: Record<string, any>): void;
-  info(message: string, context?: Record<string, any>): void;
-  debug(message: string, context?: Record<string, any>): void;
-  trace(message: string, context?: Record<string, any>): void;
+  error(message: string, context?: LogContext): void;
+  warn(message: string, context?: LogContext): void;
+  info(message: string, context?: LogContext): void;
+  debug(message: string, context?: LogContext): void;
+  trace(message: string, context?: LogContext): void;
 }

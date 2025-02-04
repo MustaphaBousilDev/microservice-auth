@@ -1,7 +1,12 @@
+import { LoggerService } from 'src/common/loggins/logger.service';
+import { IDatabaseConfig } from '../interfaces/database.interface';
 import { BaseAdapter } from './base.adapter';
 import { DataSource } from 'typeorm';
 
 export class TypeOrmAdapter extends BaseAdapter {
+  constructor(config: IDatabaseConfig, logger?: LoggerService) {
+    super(config, logger);
+  }
   private connection: DataSource;
 
   async connect(): Promise<void> {

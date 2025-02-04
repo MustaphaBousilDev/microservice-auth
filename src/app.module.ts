@@ -9,21 +9,12 @@ import { LoggerModule } from './common/loggins/logger.module';
 @Module({
   imports: [
     AppConfigModule,
-    LoggerModule.forRootAsync({
-      imports: [AppConfigModule],
-      inject: [EnvironmentVariables],
-      useFactory: (env: EnvironmentVariables) => ({
-        level: env.logLevel,
-        format: env.logFormat,
-        filePath: env.logFilePath,
-        isProduction: process.env.NODE_ENV === 'production',
-      }),
-    }),
+    LoggerModule,
     DatabaseModule.forRootAsync({
       imports: [AppConfigModule],
       inject: [EnvironmentVariables],
       useFactory: (env: EnvironmentVariables) => ({
-        provider: DatabaseProvider.PRISMA,
+        provider: DatabaseProvider.TYPEORM,
         config: {
           type: 'postgres',
           host: env.dbHost,

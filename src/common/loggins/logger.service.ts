@@ -1,41 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ILogger } from './interfaces/logger.interface';
 import { LogLevel } from './enums/log-level.enum';
 import { LogContext } from './types/log-context.type';
-import { LoggerFactory, TransportType } from './factories/logger.factory';
 import { ILogTransport } from './interfaces/log-transport.interface';
-import { LoggerModuleOptions } from './logger.module';
-import { setLoggerService } from './decorators/log.decorator';
-
 @Injectable()
 export class LoggerService implements ILogger {
-  private transports: Map<TransportType, ILogTransport>;
+  private readonly transports: ILogTransport[];
+  private logLevel: LogLevel;
 
-  constructor(
-    @Inject('LOGGER_OPTIONS')
-    private readonly options: LoggerModuleOptions,
-  ) {
-    this.initializeTransports();
-    // Set logger instance in storage
-    setLoggerService(this);
+  constructor(options: { transports: ILogTransport[]; level?: LogLevel }) {
+    this.transports = options.transports;
+    this.logLevel = options.level || LogLevel.INFO;
   }
 
-  private initializeTransports(): void {
-    if (this.options.isProduction) {
-      this.addTransport(TransportType.WINSTON);
-    } else {
-      this.addTransport(TransportType.CONSOLE);
-      this.addTransport(TransportType.FILE);
+  private shouldLog(level: LogLevel): boolean {
+    const levels = Object.values(LogLevel);
+    const currentLevelIndex = levels.indexOf(this.logLevel);
+    const targetLevelIndex = levels.indexOf(level);
+    return targetLevelIndex <= currentLevelIndex;
+  }
+
+  log(level: LogLevel, message: string, context?: LogContext): void {
+    if (this.shouldLog(level)) {
+      this.transports.forEach((transport) => {
+        transport.log(level, message, context);
+      });
     }
-  }
-
-  addTransport(type: TransportType, options?: any): void {
-    const transport = LoggerFactory.createTransport(type, options);
-    this.transports?.set(type, transport);
-  }
-
-  removeTransport(type: TransportType): void {
-    this.transports.delete(type);
   }
 
   error(message: string, context?: LogContext): void {
@@ -56,22 +46,5 @@ export class LoggerService implements ILogger {
 
   trace(message: string, context?: LogContext): void {
     this.log(LogLevel.TRACE, message, context);
-  }
-
-  private log(level: LogLevel, message: string, context?: LogContext): void {
-    const enrichedContext = this.enrichContext(context);
-
-    this.transports.forEach((transport) => {
-      transport.log(level, message, enrichedContext);
-    });
-  }
-
-  private enrichContext(context?: LogContext): LogContext {
-    return {
-      ...context,
-      timestamp: new Date(),
-      environment: process.env.NODE_ENV,
-      serviceName: process.env.SERVICE_NAME,
-    };
   }
 }
