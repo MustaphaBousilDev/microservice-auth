@@ -6,19 +6,10 @@ import { DatabaseProvider } from './config/databases/constants/database.enum';
 import { EnvironmentVariables } from './config/env/env.validation';
 import { LoggerModule } from './common/loggins/logger.module';
 import { getDatabaseConfig } from './config/databases/utils/database.utils';
+import { IDatabaseConfig } from './config/databases/interfaces/database.interface';
 interface DatabaseModuleOptions {
   provider: DatabaseProvider;
   config: IDatabaseConfig;
-}
-
-interface IDatabaseConfig {
-  type: string;
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  options?: any;
 }
 @Module({
   imports: [
@@ -30,7 +21,7 @@ interface IDatabaseConfig {
       useFactory: (env: EnvironmentVariables): DatabaseModuleOptions => {
         const selectedProvider =
           (process.env.DATABASE_PROVIDER as DatabaseProvider) ||
-          DatabaseProvider.MONGOOSE;
+          DatabaseProvider.TYPEORM;
         return {
           provider: selectedProvider,
           config: getDatabaseConfig(selectedProvider, env),
