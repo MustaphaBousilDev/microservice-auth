@@ -1,3 +1,5 @@
+import { RelationalDatabaseType } from '../constants/database.enum';
+
 export interface IDatabaseConfig {
   type: string;
   host: string;
@@ -19,6 +21,15 @@ export interface MongoDBConfig {
     useUnifiedTopology: boolean;
   };
 }
+export interface RelationalDatabaseConfig {
+  type: RelationalDatabaseType;
+  host?: string;
+  port?: number;
+  username?: string;
+  password?: string;
+  database: string;
+  options?: Record<string, any>;
+}
 export interface PostgresConfig {
   type: 'postgres';
   host: string;
@@ -28,7 +39,7 @@ export interface PostgresConfig {
   database: string;
   options?: any;
 }
-export type DatabaseConfig = MongoDBConfig | PostgresConfig;
+export type DatabaseConfig = MongoDBConfig | RelationalDatabaseConfig;
 
 export interface IDatabase {
   connect(): Promise<void>;

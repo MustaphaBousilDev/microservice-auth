@@ -49,7 +49,6 @@ export class DatabaseModule {
           provide: 'DATABASE',
           // dbOptions took his value from result of injection inject: ['DATABASE_OPTIONS'],
           useFactory: (dbOptions: DatabaseModuleOptions) => {
-            //console.log(dbOptions);
             return DatabaseFactory.createDatabase(
               dbOptions.provider,
               dbOptions.config,

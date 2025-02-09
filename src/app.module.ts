@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppConfigModule } from './config/env/config.module';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './config/databases/database.module';
-import { DatabaseProvider } from './config/databases/constants/database.enum';
+import {
+  DatabaseProvider,
+  RelationalDatabaseType,
+} from './config/databases/constants/database.enum';
 import { EnvironmentVariables } from './config/env/env.validation';
 import { LoggerModule } from './common/loggins/logger.module';
 import { getDatabaseConfig } from './config/databases/utils/database.utils';
@@ -22,9 +25,12 @@ interface DatabaseModuleOptions {
         const selectedProvider =
           (process.env.DATABASE_PROVIDER as DatabaseProvider) ||
           DatabaseProvider.TYPEORM;
+        const selectedDbType =
+          (process.env.DATABASE_TYPE as RelationalDatabaseType | 'mongodb') ||
+          RelationalDatabaseType.POSTGRES;
         return {
           provider: selectedProvider,
-          config: getDatabaseConfig(selectedProvider, env),
+          config: getDatabaseConfig(selectedProvider, selectedDbType, env),
         };
       },
     }),
