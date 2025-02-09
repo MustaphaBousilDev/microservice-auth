@@ -5,6 +5,7 @@ import { DatabaseModule } from './config/databases/database.module';
 import { DatabaseProvider } from './config/databases/constants/database.enum';
 import { EnvironmentVariables } from './config/env/env.validation';
 import { LoggerModule } from './common/loggins/logger.module';
+import { getDatabaseConfig } from './config/databases/utils/database.utils';
 interface DatabaseModuleOptions {
   provider: DatabaseProvider;
   config: IDatabaseConfig;
@@ -27,34 +28,12 @@ interface IDatabaseConfig {
       imports: [AppConfigModule],
       inject: [EnvironmentVariables],
       useFactory: (env: EnvironmentVariables): DatabaseModuleOptions => {
-        const isMongoose = DatabaseProvider.MONGOOSE;
-        if (isMongoose === DatabaseProvider.MONGOOSE) {
-          return {
-            provider: DatabaseProvider.SEQUELIZE,
-            config: {
-              type: 'mongodb',
-              host: env.dbHostMongoDB,
-              port: Number(env.dbPortMongoDB),
-              username: env.dbUsernameMongoDB,
-              password: env.dbPasswordMongoDB,
-              database: env.dbName,
-              options: {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-              },
-            },
-          };
-        }
+        const selectedProvider =
+          (process.env.DATABASE_PROVIDER as DatabaseProvider) ||
+          DatabaseProvider.MONGOOSE;
         return {
-          provider: DatabaseProvider.SEQUELIZE,
-          config: {
-            type: 'postgres',
-            host: env.dbHost,
-            port: Number(env.dbPort),
-            username: env.dbUsername,
-            password: env.dbPassword,
-            database: env.dbName,
-          },
+          provider: selectedProvider,
+          config: getDatabaseConfig(selectedProvider, env),
         };
       },
     }),

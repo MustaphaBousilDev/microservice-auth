@@ -7,6 +7,28 @@ export interface IDatabaseConfig {
   database: string;
   options?: Record<string, any>;
 }
+export interface MongoDBConfig {
+  type: 'mongodb';
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
+  options?: {
+    useNewUrlParser: boolean;
+    useUnifiedTopology: boolean;
+  };
+}
+export interface PostgresConfig {
+  type: 'postgres';
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
+  options?: any;
+}
+export type DatabaseConfig = MongoDBConfig | PostgresConfig;
 
 export interface IDatabase {
   connect(): Promise<void>;
